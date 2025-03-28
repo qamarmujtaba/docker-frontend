@@ -1,4 +1,4 @@
-name: Deploy Frontend
+name: Deploy Frontend 
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
 
       - name: Deploy Frontend
         run: |
-          ssh ${{ ubuntu }}@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
             cd ~/frontend
             git pull origin main
             npm install
