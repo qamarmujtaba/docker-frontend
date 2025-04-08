@@ -12,7 +12,7 @@ function App() {
 
     return (
         <div style={{ textAlign: "center", marginTop: "50px" }}>
-            <h1>New Frontend is working!</h1>
+            <h1>New Frontend is working! Through Pipeline</h1>
             <p>Backend says: {message}</p>
         </div>
     );
