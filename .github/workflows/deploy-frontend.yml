@@ -20,11 +20,18 @@ jobs:
         run: |
           # Copy files to EC2
           scp -r -o StrictHostKeyChecking=no . ubuntu@${{ secrets.EC2_HOST }}:~/fullstack-app/frontend
-
           # Build and run frontend
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "
-          
             cd ~/fullstack-app/frontend
             sudo docker build -t frontend .
+            
+            # Stop and remove existing container if it exists
+            sudo docker stop frontend || true
+            sudo docker rm frontend || true
+            
+            # Run new container
             sudo docker run -d --name frontend -p 80:80 --restart unless-stopped frontend
+            
+            # Clean up unused images to save space
+            sudo docker image prune -af
           "
