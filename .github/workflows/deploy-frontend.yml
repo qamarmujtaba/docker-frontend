@@ -23,6 +23,7 @@ jobs:
 
           # Build and run frontend
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "
+          sudo docker rm frontend
             cd ~/fullstack-app/frontend
             sudo docker build -t frontend .
             sudo docker run -d --name frontend -p 80:80 --restart unless-stopped frontend
