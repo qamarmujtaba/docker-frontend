@@ -19,7 +19,7 @@ jobs:
       - name: Deploy via SSH
         run: |
           # Copy files to EC2
-          scp -r -o StrictHostKeyChecking=no . ubuntu@${{ secrets.EC2_HOST }}:~/fullstack-app/frontend
+          rsync -avz --exclude='.git/' -e "ssh -o StrictHostKeyChecking=no" ./ ubuntu@${{ secrets.EC2_HOST }}:~/fullstack-app/frontend/
           # Build and run frontend
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "
             cd ~/fullstack-app/frontend
