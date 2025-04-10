@@ -16,18 +16,28 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           known_hosts: ${{ secrets.EC2_KNOWN_HOSTS }}
 
-      - name: Copy Files to EC2
+      - name: Create and Transfer Deployment Archive
         run: |
+          # Create deployment directory if it doesn't exist
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "mkdir -p ~/fullstack-deployment/frontend"
+
+          # Create tar archive of current commit (excluding .git)
+          tar --exclude='.git' --exclude='node_modules' -czf deploy.tar.gz .
+
+          # Transfer archive to EC2
           scp -o StrictHostKeyChecking=no deploy.tar.gz ubuntu@${{ secrets.EC2_HOST }}:~/fullstack-deployment/
+
+          # Extract and clean up on EC2
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "
-          cd ~/fullstack-deployment
-          tar -xzf deploy.tar.gz -C frontend/
-          rm deploy.tar.gz
+            cd ~/fullstack-deployment
+            tar -xzf deploy.tar.gz -C frontend/
+            rm deploy.tar.gz
           "
 
+          # Clean up locally
           rm deploy.tar.gz
 
-      - name: Build and Run Frontend on EC2
+      - name: Build and Run Frontend Container
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} "
             cd ~/fullstack-deployment/frontend
@@ -36,4 +46,3 @@ jobs:
             docker rm frontend-container || true
             docker run -d --name frontend-container -p 80:80 --network fullstack-network --restart unless-stopped frontend
           "
-
